@@ -1,0 +1,12 @@
+Agent Commands for OpenGL version of the code (controls agent movement)
+o Ð operate, start the agent moving, continue movement after pause
+p Ð pause movement 
+
+Visualization Commands for OpenGL version
+t Ð toggle on/off tracking of agent during movement
+f Ð forward, move closer
+r Ð reverse, move further away
+a Ð move view direction left, disabled during tracking on
+d Ð move view direction right, disabled during tracking on
+w - move view direction up, disabled during tracking on
+s Ð move view direction down, disabled during tracking on
