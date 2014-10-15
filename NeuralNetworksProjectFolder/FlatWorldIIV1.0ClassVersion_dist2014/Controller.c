@@ -38,7 +38,7 @@ void agents_controller( WORLD_TYPE *w )
   char timestamp[30] ;
   
   /* Initialize */
-  forwardspeed = 0.05 ;  
+  forwardspeed = 0 ;
 	a = w->agents[0] ; /* get agent pointer */
 	
 	/* test if agent is alive. if so, process sensors and actuators.  if not, report death and 
