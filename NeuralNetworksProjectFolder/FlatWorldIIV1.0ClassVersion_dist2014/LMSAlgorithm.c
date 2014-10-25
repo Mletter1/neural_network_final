@@ -57,7 +57,7 @@ void init(int input_num)
 /***********************************************************/
 /*  Exportable functions				   */
 /***********************************************************/
-int calculate(double *inputs, int input_num, int isCal, int type)
+int LMScalculate(double *inputs, int input_num, int isCal, int type)
 {
 	int ret = 0;
 

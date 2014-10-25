@@ -14,7 +14,6 @@
  *  Copyright 2009 UNM. All rights reserved.
  *
  */
-
 #include "LMSAlgorithm.h"
 
 void agents_controller( WORLD_TYPE *w )
@@ -74,7 +73,7 @@ void agents_controller( WORLD_TYPE *w )
     	}
 
     	/*Train the neuron*/
-		calculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, delta_energy > old_delta_energy);	//Todo: add the type
+		//LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, delta_energy > old_delta_energy);	//Todo: add the type
 		
 		/* read hearing sensors and load spectra for each ear, and compute integrated sound magnitudes */
 		read_acoustic_sensor( w, a) ;
@@ -92,6 +91,7 @@ void agents_controller( WORLD_TYPE *w )
 		read_visual_sensor( w, a) ;
 		eyevalues = extract_visual_receptor_values_pointer( a, 0 ) ;
 		
+ 
 		/* find brights object in visual field */
 		maxvisualreceptor = intensity_winner_takes_all( a ) ;
 

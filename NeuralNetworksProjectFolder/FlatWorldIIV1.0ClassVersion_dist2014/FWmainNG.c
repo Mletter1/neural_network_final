@@ -15,6 +15,7 @@
 
 #include "Distributions_Funcs.h"
 #include "FlatworldIICore.h"
+#include "LMSAlgorithm.h"
 
 #define TRUE 1
 #define FALSE 0
