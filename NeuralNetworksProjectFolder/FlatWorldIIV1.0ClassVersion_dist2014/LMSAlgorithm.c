@@ -10,7 +10,7 @@
 #define LEARNING_RATE 0.01;
 #define NEURON_NUM 1
 
-volatile int initialized = 0;
+int initialized = 0;
 perceptron neuron_brain;
 
 void v_function(double* inputs, perceptron* p)
@@ -57,3 +57,24 @@ void init(int input_num)
 /***********************************************************/
 /*  Exportable functions				   */
 /***********************************************************/
+int calculate(double *inputs, int input_num, int isCal, int type)
+{
+	int ret = 0;
+
+	if(!initialized)
+	{
+		init(input_num);
+		initialized = 1;
+	}
+
+	v_function(inputs, &neuron_brain);
+	y_function(&neuron_brain);
+
+	if(neuron_brain->output > 0.5)
+		ret = 1;
+
+	if(isCal)
+		adjust_function(inputs, &neuron_brain, NULL);
+
+	return ret;
+}

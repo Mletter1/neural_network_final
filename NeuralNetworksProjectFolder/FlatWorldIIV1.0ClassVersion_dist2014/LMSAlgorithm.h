@@ -5,7 +5,7 @@
  *      Author: lin
  */
 #include "Perceptron.h"
-#include <math.h>
+
 
 #ifndef LMSALGORITHM_H_
 #define LMSALGORITHM_H_

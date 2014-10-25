@@ -38,7 +38,8 @@ void agents_controller( WORLD_TYPE *w )
 	time_t now ;
 	struct tm *date ;
 	char timestamp[30] ;
-  
+	int is_poisonous = 0;
+
 	/* Initialize */
 	forwardspeed = 0 ;
   

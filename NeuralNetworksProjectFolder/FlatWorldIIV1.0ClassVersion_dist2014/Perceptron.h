@@ -12,9 +12,6 @@ typedef struct perceptron
 	double v;
 	double output;
 	int is_inner_neuron;	/*inner neuron has no error, but sigma instead*/
-	void (*v_function)(double*, perceptron*);
-	void (*y_function)(perceptron*);
-	void (*adjust_function)(double*, perceptron*, void*);
 	void *param;	/*Reserved variable for future use*/
 }perceptron;
 
