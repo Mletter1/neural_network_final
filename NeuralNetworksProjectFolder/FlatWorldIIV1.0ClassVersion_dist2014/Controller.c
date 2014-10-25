@@ -15,6 +15,8 @@
  *
  */
 
+#include "LMSAlgorithm.h"
+
 void agents_controller( WORLD_TYPE *w )
 { /* Adhoc function to test agents, to be replaced with NN controller. tpc */
 	
@@ -44,12 +46,12 @@ void agents_controller( WORLD_TYPE *w )
 	
 	/* test if agent is alive. if so, process sensors and actuators.  if not, report death and 
 		reset agent & world */
-	if( a->instate->metabolic_charge>0.0 )
+	if( a->instate->metabolic_charge > 0.0)
 	{
 		/* get current motor rates and body/head angles */
-		read_actuators_agent( a, &dfb, &drl, &dth, &dh ) ;
+		read_actuators_agent(a, &dfb, &drl, &dth, &dh ) ;
 		read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
-		read_agent_head_angle( a, &headth ) ;
+		read_agent_head_angle( a, &headth );
 				
 		/* read somatic(touch) sensor for collision */  
 		collision_flag = read_soma_sensor(w, a) ; 	
@@ -60,7 +62,7 @@ void agents_controller( WORLD_TYPE *w )
     	{
       		if( (k==0 || k==1 || k==7 ) && skinvalues[k][0]>0.0 )
       		{
-        		delta_energy = eat_colliding_object( w, a, k) ;
+        		delta_energy = eat_colliding_object(w, a, k) ;
       		}
     	}
     
@@ -104,7 +106,6 @@ void agents_controller( WORLD_TYPE *w )
 		/* decrement metabolic charge by basil metabolism rate.  DO NOT REMOVE THIS CALL */
 		basal_metabolism_agent( a ) ;
 		simtime++ ;
-
 	} /* end agent alive condition */
 	else
 	{

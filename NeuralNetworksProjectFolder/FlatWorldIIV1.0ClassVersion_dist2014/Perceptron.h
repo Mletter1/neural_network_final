@@ -8,10 +8,13 @@
 typedef struct perceptron
 {
 	int input_num;
-	int v;
-	int output;
-	int error;
-	int sigma;	/*Reserved variable for multi-layer back propagation*/
+	double *weights;
+	double v;
+	double output;
+	int is_inner_neuron;	/*inner neuron has no error, but sigma instead*/
+	void (*v_function)(double*, perceptron*);
+	void (*y_function)(perceptron*);
+	void (*adjust_function)(double*, perceptron*, void*);
 	void *param;	/*Reserved variable for future use*/
 }perceptron;
 
@@ -23,5 +26,8 @@ typedef struct perceptron
 /***********************************************************/
 /*  Exportable functions				   */
 /***********************************************************/
+void perceptron_default(perceptron *neuron);
+
+void perceptron_clear(perceptron *neuron);
 
 #endif
