@@ -26,7 +26,7 @@ void agents_controller( WORLD_TYPE *w )
 	int maxvisualreceptor = -1 ;
 	int nsomareceptors ;
 	int nacousticfrequencies ;
-	float delta_energy ;
+	float delta_energy, old_delta_energy;
 	float dfb , drl, dth, dh ;
 	float headth ;
 	float forwardspeed ;
@@ -59,6 +59,12 @@ void agents_controller( WORLD_TYPE *w )
     	skinvalues = extract_soma_receptor_values_pointer( a ) ;
     	nsomareceptors = get_number_of_soma_receptors( a ) ;
     	
+		/* read visual sensor to get R, G, B intensity values to collect x values*/ 
+		read_visual_sensor( w, a) ;
+		eyevalues = extract_visual_receptor_values_pointer( a, 0 ) ;
+
+		old_delta_energy = delta_energy;
+
 		for( k=0 ; k<nsomareceptors ; k++ )
     	{
       		if( (k==0 || k==1 || k==7 ) && skinvalues[k][0]>0.0 )
@@ -66,7 +72,10 @@ void agents_controller( WORLD_TYPE *w )
         		delta_energy = eat_colliding_object(w, a, k) ;
       		}
     	}
-    
+
+    	/*Train the neuron*/
+		calculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, delta_energy > old_delta_energy);	//Todo: add the type
+		
 		/* read hearing sensors and load spectra for each ear, and compute integrated sound magnitudes */
 		read_acoustic_sensor( w, a) ;
 		ear0values = extract_sound_receptor_values_pointer( a, 0 ) ;
@@ -85,7 +94,7 @@ void agents_controller( WORLD_TYPE *w )
 		
 		/* find brights object in visual field */
 		maxvisualreceptor = intensity_winner_takes_all( a ) ;
-		
+
 		if( maxvisualreceptor >= 0 ) 
 		{
 			/* use brightest visual receptor to determine how to turn body to center it in the field of view */

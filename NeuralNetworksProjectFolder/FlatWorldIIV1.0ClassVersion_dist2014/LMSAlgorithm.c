@@ -12,6 +12,7 @@
 
 int initialized = 0;
 perceptron neuron_brain;
+double accumulated_rms = 0;
 
 void v_function(double* inputs, struct perceptron* p)
 {
@@ -29,15 +30,14 @@ void y_function(struct perceptron* p)
 
 void adjust_function(double* inputs, struct perceptron* p, void *params)
 {
-	double error = 0;
 	double target =*((double *) params);
 	int idx = 0;
 
-	error = target - p->output;
+	p->error = target - p->output;
 
 	for(idx = 0; idx < p->input_num; idx++)
 	{
-		p->weights[idx] += (error * inputs[idx] * LEARNING_RATE);
+		p->weights[idx] += (p->error * inputs[idx] * LEARNING_RATE);
 	}
 }
 
@@ -74,7 +74,12 @@ int calculate(double *inputs, int input_num, int isCal, int type)
 		ret = 1;
 
 	if(isCal)
+	{
 		adjust_function(inputs, &neuron_brain, NULL);
+		
+		/*Log rms*/
+		accumulated_rms += (pow(neuron_brain->error, 2));
+	}
 
 	return ret;
 }

@@ -11,6 +11,7 @@ typedef struct perceptron
 	double *weights;
 	double v;
 	double output;
+	double error;
 	int is_inner_neuron;	/*inner neuron has no error, but sigma instead*/
 	void *param;	/*Reserved variable for future use*/
 }perceptron;
