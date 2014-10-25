@@ -7,7 +7,7 @@
 #include "LMSAlgorithm.h"
 
 #define OUTPUT_NUM 1
-#define LEARNING_RATE 0.01;
+#define LEARNING_RATE 0.01
 #define NEURON_NUM 1
 
 int initialized = 0;
