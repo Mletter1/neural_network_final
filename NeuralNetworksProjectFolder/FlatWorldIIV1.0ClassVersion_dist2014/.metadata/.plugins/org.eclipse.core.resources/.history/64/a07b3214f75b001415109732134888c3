@@ -1,0 +1,21 @@
+/*
+ * LMSAlgorithm.h
+ *
+ *  Created on: Oct 24, 2014
+ *      Author: lin
+ */
+#include "Perceptron.h"
+<<<<<<< HEAD
+
+=======
+>>>>>>> d0ce192fd87e3165f07f9cd8a2b0f21a5ec9807d
+
+#ifndef LMSALGORITHM_H_
+#define LMSALGORITHM_H_
+
+
+/***********************************************************/
+/*  Exportable functions				   */
+/***********************************************************/
+
+#endif /* LMSALGORITHM_H_ */

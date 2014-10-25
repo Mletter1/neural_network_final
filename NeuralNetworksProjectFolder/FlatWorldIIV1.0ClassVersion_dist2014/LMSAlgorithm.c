@@ -13,7 +13,7 @@
 int initialized = 0;
 perceptron neuron_brain;
 
-void v_function(double* inputs, perceptron* p)
+void v_function(double* inputs, struct perceptron* p)
 {
 	int it = 0;
 	p->v = 0;
@@ -22,12 +22,12 @@ void v_function(double* inputs, perceptron* p)
 		p->v += (inputs[it] * p->weights[it]);
 	}
 }
-void y_function(perceptron* p)
+void y_function(struct perceptron* p)
 {
 	p->output = p->v;
 }
 
-void adjust_function(double* inputs, perceptron* p, void *params)
+void adjust_function(double* inputs, struct perceptron* p, void *params)
 {
 	double error = 0;
 	double target =*((double *) params);
