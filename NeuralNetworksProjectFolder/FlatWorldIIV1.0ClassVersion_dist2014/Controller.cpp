@@ -15,6 +15,9 @@
  *
  */
 #include "LMSAlgorithm.h"
+#include <vector>
+
+using namespace std;
 
 void agents_controller( WORLD_TYPE *w )
 { /* Adhoc function to test agents, to be replaced with NN controller. tpc */
@@ -38,6 +41,8 @@ void agents_controller( WORLD_TYPE *w )
 	struct tm *date ;
 	char timestamp[30] ;
 	int is_poisonous = 0;
+
+	vector<int> values;
 
 	/* Initialize */
 	forwardspeed = 0 ;
