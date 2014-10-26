@@ -16,7 +16,11 @@ typedef struct object_list
 }object_list;
 
 static object_list list;
+static epoch_num = 0;
+static double *rmss = NULL;
+static int object_num = 0;
 
+/*Unexported functions*/
 object *addObject(float *input, int input_num, float output);
 void clearObjects();
 
@@ -42,9 +46,13 @@ void agents_controller( WORLD_TYPE *w )
 	struct tm *date ;
 	char timestamp[30] ;
 	int is_poisonous = 0;
-	
+	//temporary file
+	char eye_data_file_name[20] = "./eye_data.csv";
+	int idx = 0;
+	FILE *fp = 0x0;
+
 	/* Initialize */
-	forwardspeed = 0 ;
+	forwardspeed = 0.5;
   
  	a = w->agents[0] ; /* get agent pointer */
 	
@@ -66,20 +74,24 @@ void agents_controller( WORLD_TYPE *w )
 		read_visual_sensor( w, a) ;
 		eyevalues = extract_visual_receptor_values_pointer( a, 0 ) ;
 
-		old_delta_energy = delta_energy;
 
 		for( k=0 ; k<nsomareceptors ; k++ )
     		{
       			if( (k==0 || k==1 || k==7 ) && skinvalues[k][0]>0.0 )
       			{
         			delta_energy = eat_colliding_object(w, a, k) ;
-      			}
+      				
+				if(delta_energy != 0)
+				{
+					printf("Training the neuron with delta value is %f\n", delta_energy);
+					object_num++;	
+					/*Train the neuron*/
+					LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, (delta_energy > 0 ? 1.0 : 0.0));
+				}
+			}
     		}
 
-    		/* the neuron*/
-		LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, delta_energy - old_delta_energy);	//Todo: add the type
-		
-		/* read hearing sensors and load spectra for each ear, and compute integrated sound magnitudes */
+    						/* read hearing sensors and load spectra for each ear, and compute integrated sound magnitudes */
 		read_acoustic_sensor( w, a) ;
 		ear0values = extract_sound_receptor_values_pointer( a, 0 ) ;
 		ear1values = extract_sound_receptor_values_pointer( a, 1 ) ;
@@ -94,8 +106,7 @@ void agents_controller( WORLD_TYPE *w )
 		/* read visual sensor to get R, G, B intensity values */ 
 		read_visual_sensor( w, a) ;
 		eyevalues = extract_visual_receptor_values_pointer( a, 0 ) ;
-		
- 
+		 
 		/* find brights object in visual field */
 		maxvisualreceptor = intensity_winner_takes_all( a ) ;
 
@@ -123,7 +134,6 @@ void agents_controller( WORLD_TYPE *w )
 	} /* end agent alive condition */
 	else
 	{
-    
 		/* Example of agent is dead condition */
 		printf("agent_controller- Agent has died, eating %d objects. simtime: %d\n",a->instate->itemp[0], simtime ) ;
 		now = time(NULL) ;
@@ -146,11 +156,32 @@ void agents_controller( WORLD_TYPE *w )
 		simtime = 0 ;
 		nlifetimes++ ;
 		
-		if( nlifetimes >= maxnlifetimes )
+		if(nlifetimes >= maxnlifetimes )
 		{
+			/*plot data and clean up data*/
+			//Todo: plot data
+			if((fp = open(eye_data_file_name, "w+")) != 0x0)
+			{
+				for(idx = 0; idx < epoch_num; idx++)
+				{
+					fprintf("%d,%lg", idx+1, rmss[idx]);
+				}
+
+				fclose(fp);
+			}
+			epoch_num = 0;
+			free(rmss);
+
 			avelifetime /= (float)maxnlifetimes ;
 			printf("\nAverage lifetime: %f\n",avelifetime) ;
 			exit(0) ;
+		}
+		else
+		{
+			epoch_num++;
+			rmss = realloc(rmss, epoch_num);
+			rmss[epoch_num-1] = pow(accumulated_rms/object_num, 0.5);
+			object_num = 0;
 		}
 	} /* end agent dead condition */
 }/*end agents_controller()*/

@@ -1,6 +1,6 @@
 #Makefile for Flatworld II V1.0 tpc 17 March 2009
 CC = gcc
-FILES = FWmain.o
+FILES = FWmainNG.o Perceptron.o
 #for Linux
 #IPATH= -I/usr/X11R6/include 
 #LPATH= -L/usr/X11R6/lib
@@ -8,7 +8,7 @@ FILES = FWmain.o
 OPSYS = $(shell uname)
 
 COPTS = -O2
-LDLIBS = -lglut -lGL -lm
+LDLIBS = -lm
 
 ifeq ($(OPSYS), Darwin)
 	IPATH += -I/sw/include
@@ -19,10 +19,10 @@ endif
 
 
 FWmain: $(FILES)
-	 $(CC) -g -Wall $(COPTS) $(FILES) $(IPATH) $(LPATH) $(LDLIBS) -o FWmain
+	 $(CC) -g -Wall $(COPTS) $(FILES) $(IPATH) $(LPATH) $(LDLIBS)
 
-FWmain.o: FWmain.c 
+FWmain.o: FWmainNG.c 
 
-	$(CC) -c -Wall $(COPTS) $(IPATH) FWmain.c
+	$(CC) -c -Wall $(COPTS) $(IPATH) FWmainNG.c Perceptron.c
 clean:
-	-rm -f *.o FWmain
+	-rm -f *.o FWmainNG

@@ -11,9 +11,9 @@
 #define LEARNING_RATE 0.01
 #define NEURON_NUM 1
 
-int initialized = 0;
-perceptron neuron_brain;
-double accumulated_rms = 0;
+static int initialized = 0;
+static perceptron neuron_brain;
+static double accumulated_rms = 0;
 
 void v_function(float* inputs, struct perceptron* p)
 {
@@ -92,4 +92,9 @@ int LMScalculate(float *inputs, int input_num, int isCal, float expected)
 	}
 
 	return ret;
+}
+
+void reset()
+{
+	accumulated_rms = 0;
 }
