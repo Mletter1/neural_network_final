@@ -77,7 +77,7 @@ void agents_controller( WORLD_TYPE *w )
     		}
 
     		/* the neuron*/
-		LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, delta_energy > old_delta_energy);	//Todo: add the type
+		LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, delta_energy - old_delta_energy);	//Todo: add the type
 		
 		/* read hearing sensors and load spectra for each ear, and compute integrated sound magnitudes */
 		read_acoustic_sensor( w, a) ;

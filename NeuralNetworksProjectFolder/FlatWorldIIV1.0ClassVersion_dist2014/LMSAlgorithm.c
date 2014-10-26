@@ -1,10 +1,11 @@
-/
+/*
  * LMSAlgorithm.c
  *
  *  Created on: Oct 24, 2014
  *      Author: lin
  */
 #include "LMSAlgorithm.h"
+#include "Perceptron.h"
 
 #define OUTPUT_NUM 1
 #define LEARNING_RATE 0.01
@@ -14,13 +15,13 @@ int initialized = 0;
 perceptron neuron_brain;
 double accumulated_rms = 0;
 
-void v_function(double* inputs, struct perceptron* p)
+void v_function(float* inputs, struct perceptron* p)
 {
 	int it = 0;
 	p->v = 0;
 
 	p->v += p->weights[0];/*Bias*/
-	for(int it = 0; it < p->input_num; it++)
+	for(it = 0; it < p->input_num; it++)
 	{
 		p->v += (inputs[it] * p->weights[it+1]);
 	}
@@ -31,7 +32,7 @@ void y_function(struct perceptron* p)
 	p->output = p->v;
 }
 
-void adjust_function(double* inputs, struct perceptron* p, void *params)
+void adjust_function(float* inputs, struct perceptron* p, void *params)
 {
 	double target =*((double *) params);
 	int idx = 0;
@@ -48,12 +49,12 @@ void adjust_function(double* inputs, struct perceptron* p, void *params)
 void init(int input_num)
 {
 	int idx = 0;
-	neuron_brain->input_num = input_num;
+	neuron_brain.input_num = input_num;
 	perceptron_default(&neuron_brain);
 
 	for(idx = 0; idx <= input_num; idx++)
 	{
-		neuron_brain->weights[idx] = 0.1 * (rand()%10);
+		neuron_brain.weights[idx] = 0.1 * (rand()%10);
 	}
 }
 
@@ -61,10 +62,10 @@ void init(int input_num)
 /***********************************************************/
 /*  Exportable functions				   */
 /***********************************************************/
-int LMScalculate(double *inputs, int input_num, int isCal, float expected)
+int LMScalculate(float *inputs, int input_num, int isCal, float expected)
 {
 	int ret = 0;
-	double e = expected;
+	double e = (double)expected;
 
 	if(!initialized)
 	{
@@ -75,7 +76,7 @@ int LMScalculate(double *inputs, int input_num, int isCal, float expected)
 	v_function(inputs, &neuron_brain);
 	y_function(&neuron_brain);
 
-	if(neuron_brain->output > 0.5)
+	if(neuron_brain.output > 0.5)
 		ret = 1;
 
 	if(isCal)
@@ -83,7 +84,7 @@ int LMScalculate(double *inputs, int input_num, int isCal, float expected)
 		adjust_function(inputs, &neuron_brain, &e);
 		
 		/*Log rms*/
-		accumulated_rms += (pow(neuron_brain->error, 2));
+		accumulated_rms += (pow(neuron_brain.error, 2));
 	}
 	else
 	{

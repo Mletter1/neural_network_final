@@ -14,6 +14,6 @@
 /***********************************************************/
 /*  Exportable functions				   */
 /***********************************************************/
-int LMScalculate(double *inputs, int input_num, int isCal, int type);
+int LMScalculate(float *inputs, int input_num, int isCal, float expected);
 
 #endif /* LMSALGORITHM_H_ */

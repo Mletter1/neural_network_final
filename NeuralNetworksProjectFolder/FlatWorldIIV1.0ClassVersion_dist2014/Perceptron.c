@@ -1,5 +1,6 @@
 
 #include "Perceptron.h"
+#include <stdlib.h>
 
 /***********************************************************/
 /*  Global variable					   */
