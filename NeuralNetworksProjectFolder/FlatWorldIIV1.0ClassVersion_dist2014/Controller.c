@@ -16,9 +16,9 @@ typedef struct object_list
 }object_list;
 
 static object_list list;
-static epoch_num = 0;
-static double *rmss = NULL;
-static int object_num = 0;
+int epoch_num = 0;
+double rmss[10000];
+int object_num = 0;
 
 /*Unexported functions*/
 object *addObject(float *input, int input_num, float output);
@@ -160,17 +160,17 @@ void agents_controller( WORLD_TYPE *w )
 		{
 			/*plot data and clean up data*/
 			//Todo: plot data
-			if((fp = open(eye_data_file_name, "w+")) != 0x0)
+			printf("store the data and exit with epoch %d\n", epoch_num);
+			if((fp = fopen(eye_data_file_name, "w+")) != 0x0)
 			{
 				for(idx = 0; idx < epoch_num; idx++)
 				{
-					fprintf("%d,%lg", idx+1, rmss[idx]);
+					fprintf(fp, "%d,%lg\n", idx+1, rmss[idx]);
 				}
 
 				fclose(fp);
 			}
 			epoch_num = 0;
-			free(rmss);
 
 			avelifetime /= (float)maxnlifetimes ;
 			printf("\nAverage lifetime: %f\n",avelifetime) ;
@@ -178,9 +178,10 @@ void agents_controller( WORLD_TYPE *w )
 		}
 		else
 		{
+			printf("This is the %dth epoch\n", epoch_num);			
+			rmss[epoch_num] = pow(accumulated_rms/object_num, 0.5);
 			epoch_num++;
-			rmss = realloc(rmss, epoch_num);
-			rmss[epoch_num-1] = pow(accumulated_rms/object_num, 0.5);
+			accumulated_rms = 0;
 			object_num = 0;
 		}
 	} /* end agent dead condition */

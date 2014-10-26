@@ -25,4 +25,4 @@ FWmain.o: FWmainNG.c
 
 	$(CC) -c -Wall $(COPTS) $(IPATH) FWmainNG.c Perceptron.c
 clean:
-	-rm -f *.o FWmainNG
+	-rm -f *.o a.out

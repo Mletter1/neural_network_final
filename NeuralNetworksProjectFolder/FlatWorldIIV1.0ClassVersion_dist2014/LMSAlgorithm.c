@@ -11,9 +11,9 @@
 #define LEARNING_RATE 0.01
 #define NEURON_NUM 1
 
-static int initialized = 0;
-static perceptron neuron_brain;
-static double accumulated_rms = 0;
+int initialized = 0;
+perceptron neuron_brain;
+double accumulated_rms = 0;
 
 void v_function(float* inputs, struct perceptron* p)
 {
