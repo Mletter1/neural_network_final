@@ -162,7 +162,7 @@ void agents_controller( WORLD_TYPE *w )
 		{
 			/*plot data and clean up data*/
 			//Todo: plot data
-			sprintf(eye_data_file_name_str, "%s_%d_%d_%d.csv", eye_data_file_name, date->tm_hour, date->tm_min, date->tm_sec);
+			sprintf(eye_data_file_name_str, "%s%d_%d_%d.csv", eye_data_file_name, date->tm_hour, date->tm_min, date->tm_sec);
 			printf("store the data and exit with epoch %d\n", epoch_num);
 			if((fp = fopen(eye_data_file_name_str, "w+")) != 0x0)
 			{
