@@ -10,6 +10,7 @@
 #ifndef LMSALGORITHM_H_
 #define LMSALGORITHM_H_
 
+extern perceptron neuron_brain;
 extern double accumulated_rms;
 /***********************************************************/
 /*  Exportable functions				   */

@@ -1,4 +1,5 @@
 #include "LMSAlgorithm.h"
+#include "Perceptron.h"
 
 typedef struct object
 {
@@ -165,9 +166,18 @@ void agents_controller( WORLD_TYPE *w )
 			printf("store the data and exit with epoch %d\n", epoch_num);
 			if((fp = fopen(eye_data_file_name_str, "w+")) != 0x0)
 			{
+				/*Log rms*/
 				for(idx = 0; idx < epoch_num; idx++)
 				{
 					fprintf(fp, "%d,%lg\n", idx+1, rmss[idx]);
+				}
+				
+				fprintf(fp, "\nThe final weights are:\n");
+
+				/*Log weights*/
+				for(idx = 0; idx <= neuron_brain.input_num; idx++)
+				{
+					fprintf(fp, "%lg,", neuron_brain.weights[idx]);
 				}
 
 				fclose(fp);
