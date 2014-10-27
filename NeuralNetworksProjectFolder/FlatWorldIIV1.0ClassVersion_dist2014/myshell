@@ -1,0 +1,10 @@
+#!/bin/bash
+make clean
+make
+
+#run the file
+for i in {1..$1}
+do
+	./a.out
+done
+

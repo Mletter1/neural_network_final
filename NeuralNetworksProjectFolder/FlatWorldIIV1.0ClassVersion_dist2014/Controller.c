@@ -47,7 +47,8 @@ void agents_controller( WORLD_TYPE *w )
 	char timestamp[30] ;
 	int is_poisonous = 0;
 	//temporary file
-	char eye_data_file_name[20] = "./eye_data.csv";
+	char eye_data_file_name[20] = "./dat/eye_data_";
+	char eye_data_file_name_str[50] = "";
 	int idx = 0;
 	FILE *fp = 0x0;
 
@@ -160,8 +161,9 @@ void agents_controller( WORLD_TYPE *w )
 		{
 			/*plot data and clean up data*/
 			//Todo: plot data
+			sprintf(eye_data_file_name_str, "%s_%d_%d_%d.csv", eye_data_file_name, date->tm_hour, date->tm_min, date->tm_sec);
 			printf("store the data and exit with epoch %d\n", epoch_num);
-			if((fp = fopen(eye_data_file_name, "w+")) != 0x0)
+			if((fp = fopen(eye_data_file_name_str, "w+")) != 0x0)
 			{
 				for(idx = 0; idx < epoch_num; idx++)
 				{
