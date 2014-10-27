@@ -1,4 +1,4 @@
-#include "LMSAlgorithm.c"
+#include "LMSAlgorithm.h"
 
 typedef struct object
 {
