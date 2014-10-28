@@ -54,14 +54,16 @@ void agents_controller( WORLD_TYPE *w )
 	FILE *fp = 0x0;
 
 	/* Initialize */
-	forwardspeed = 0.5;
-  
+//	forwardspeed = 0.5;
+ forwardspeed = rand()%100*0.1;
+ 
  	a = w->agents[0] ; /* get agent pointer */
 	
 	/* test if agent is alive. if so, process sensors and actuators.  if not, report death and 
 		reset agent & world */
 	if( a->instate->metabolic_charge > 0.0)
 	{
+#if 0
 		/* get current motor rates and body/head angles */
 		read_actuators_agent(a, &dfb, &drl, &dth, &dh ) ;
 		read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
@@ -125,7 +127,7 @@ void agents_controller( WORLD_TYPE *w )
 			read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
  			set_agent_body_angle( a, bodyth + 45.0 ) ;
 		}
-
+#endif
 		/* move the agents body */
 		set_forward_speed_agent( a, forwardspeed ) ;
 		move_body_agent( a ) ;
@@ -142,7 +144,14 @@ void agents_controller( WORLD_TYPE *w )
 		date = localtime( &now ) ;
 		strftime(timestamp, 30, "%y/%m/%d H: %H M: %M S: %S",date) ;
 		printf("Death time: %s\n",timestamp) ;
+		sprintf(eye_data_file_name_str, "timevsspeed.csv");
+		if((fp = fopen(eye_data_file_name_str, "a+")) != 0x0)
+		{
 		
+			fprintf(fp, "%f,%d\n", forwardspeed, simtime);
+			fclose(fp);
+		}
+
 		/* Example as to how to restore the world and agent after it dies. */
 		restore_objects_to_world( Flatworld ) ;  /* restore all of the objects back into the world */
 		reset_agent_charge( a ) ;               /* recharge the agent's battery to full */
@@ -157,8 +166,8 @@ void agents_controller( WORLD_TYPE *w )
 		avelifetime += (float)simtime ;
 		simtime = 0 ;
 		nlifetimes++ ;
-		
-		if(nlifetimes >= maxnlifetimes )
+				
+		if(nlifetimes >= 100)//maxnlifetimes )
 		{
 			/*plot data and clean up data*/
 			//Todo: plot data
@@ -190,7 +199,7 @@ void agents_controller( WORLD_TYPE *w )
 		}
 		else
 		{
-			printf("This is the %dth epoch\n", epoch_num);			
+			printf("This is the %dth epoch with %f random speed\n", epoch_num, forwardspeed);			
 			rmss[epoch_num] = pow(accumulated_rms/object_num, 0.5);
 			epoch_num++;
 			accumulated_rms = 0;
