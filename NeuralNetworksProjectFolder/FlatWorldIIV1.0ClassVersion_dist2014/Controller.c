@@ -63,7 +63,8 @@ void agents_controller( WORLD_TYPE *w )
 		reset agent & world */
 	if( a->instate->metabolic_charge > 0.0)
 	{
-#if 0		/* get current motor rates and body/head angles */
+		printf("moving.....\n");
+		/* get current motor rates and body/head angles */
 		read_actuators_agent(a, &dfb, &drl, &dth, &dh ) ;
 		read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
 		read_agent_head_angle( a, &headth );
@@ -83,6 +84,7 @@ void agents_controller( WORLD_TYPE *w )
       			if( (k==0 || k==1 || k==7 ) && skinvalues[k][0]>0.0 )
       			{
         			delta_energy = eat_colliding_object(w, a, k) ;		
+#if 0				
 				if(delta_energy != 0)
 				{
 					printf("Training the neuron with delta value is %f\n", delta_energy);
@@ -90,6 +92,7 @@ void agents_controller( WORLD_TYPE *w )
 					/*Train the neuron*/
 					LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, (delta_energy > 0 ? 1.0 : 0.0));
 				}
+#endif
 			}
     		}
 
@@ -125,7 +128,7 @@ void agents_controller( WORLD_TYPE *w )
 			read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
  			set_agent_body_angle( a, bodyth + 45.0 ) ;
 		}
-#endif		/* move the agents body */
+		/* move the agents body */
 		set_forward_speed_agent( a, forwardspeed ) ;
 		move_body_agent( a ) ;
 
@@ -158,16 +161,14 @@ void agents_controller( WORLD_TYPE *w )
 		h = distributions_uniform( -179.0, 179.0) ;
 		printf("\nagent_controller- new coordinates after restoration:  x: %f y: %f h: %f\n",x,y,h) ;
 		set_agent_body_position( a, x, y, h ) ;    /* set new position and heading of agent */
-    		read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
- 		set_agent_body_angle( a, bodyth + rand()%360);
-
+    		
 		/* Accumulate lifetime statistices */
 		avelifetime += (float)simtime ;
 		simtime = 0 ;
 		nlifetimes++ ;
 		forwardspeed += 0.005;
 				
-		if(nlifetimes >= 100)//maxnlifetimes )
+		if(nlifetimes >= 20)//maxnlifetimes )
 		{
 			/*plot data and clean up data*/
 			//Todo: plot data
