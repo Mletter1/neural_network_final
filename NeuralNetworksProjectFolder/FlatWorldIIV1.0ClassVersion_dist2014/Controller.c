@@ -20,6 +20,7 @@ static object_list list;
 int epoch_num = 0;
 double rmss[10000];
 int object_num = 0;
+float forwardspeed = 0.01;
 
 /*Unexported functions*/
 object *addObject(float *input, int input_num, float output);
@@ -37,7 +38,7 @@ void agents_controller( WORLD_TYPE *w )
 	float delta_energy, old_delta_energy;
 	float dfb , drl, dth, dh ;
 	float headth ;
-	float forwardspeed ;
+	//float forwardspeed ;
 	float maxvisualreceptordirection ;
 	float bodyx, bodyy, bodyth ;
 	float x, y, h ;
@@ -55,7 +56,6 @@ void agents_controller( WORLD_TYPE *w )
 
 	/* Initialize */
 //	forwardspeed = 0.5;
- forwardspeed = rand()%10000*0.0001;
  
  	a = w->agents[0] ; /* get agent pointer */
 	
@@ -63,8 +63,7 @@ void agents_controller( WORLD_TYPE *w )
 		reset agent & world */
 	if( a->instate->metabolic_charge > 0.0)
 	{
-#if 0
-		/* get current motor rates and body/head angles */
+#if 0		/* get current motor rates and body/head angles */
 		read_actuators_agent(a, &dfb, &drl, &dth, &dh ) ;
 		read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
 		read_agent_head_angle( a, &headth );
@@ -83,8 +82,7 @@ void agents_controller( WORLD_TYPE *w )
     		{
       			if( (k==0 || k==1 || k==7 ) && skinvalues[k][0]>0.0 )
       			{
-        			delta_energy = eat_colliding_object(w, a, k) ;
-      				
+        			delta_energy = eat_colliding_object(w, a, k) ;		
 				if(delta_energy != 0)
 				{
 					printf("Training the neuron with delta value is %f\n", delta_energy);
@@ -127,8 +125,7 @@ void agents_controller( WORLD_TYPE *w )
 			read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
  			set_agent_body_angle( a, bodyth + 45.0 ) ;
 		}
-#endif
-		/* move the agents body */
+#endif		/* move the agents body */
 		set_forward_speed_agent( a, forwardspeed ) ;
 		move_body_agent( a ) ;
 
@@ -161,11 +158,14 @@ void agents_controller( WORLD_TYPE *w )
 		h = distributions_uniform( -179.0, 179.0) ;
 		printf("\nagent_controller- new coordinates after restoration:  x: %f y: %f h: %f\n",x,y,h) ;
 		set_agent_body_position( a, x, y, h ) ;    /* set new position and heading of agent */
-    
+    		read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
+ 		set_agent_body_angle( a, bodyth + rand()%360);
+
 		/* Accumulate lifetime statistices */
 		avelifetime += (float)simtime ;
 		simtime = 0 ;
 		nlifetimes++ ;
+		forwardspeed += 0.01;
 				
 		if(nlifetimes >= 100)//maxnlifetimes )
 		{

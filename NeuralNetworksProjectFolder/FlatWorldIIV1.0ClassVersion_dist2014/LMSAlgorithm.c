@@ -14,6 +14,7 @@
 int initialized = 0;
 perceptron neuron_brain;
 double accumulated_rms = 0;
+float forwardspeed;
 
 void v_function(float* inputs, struct perceptron* p)
 {
