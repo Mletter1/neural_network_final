@@ -20,7 +20,7 @@ static object_list list;
 int epoch_num = 0;
 double rmss[10000];
 int object_num = 0;
-float forwardspeed = 0.01;
+float forwardspeed = 0;
 
 /*Unexported functions*/
 object *addObject(float *input, int input_num, float output);
@@ -165,7 +165,7 @@ void agents_controller( WORLD_TYPE *w )
 		avelifetime += (float)simtime ;
 		simtime = 0 ;
 		nlifetimes++ ;
-		forwardspeed += 0.01;
+		forwardspeed += 0.005;
 				
 		if(nlifetimes >= 100)//maxnlifetimes )
 		{
