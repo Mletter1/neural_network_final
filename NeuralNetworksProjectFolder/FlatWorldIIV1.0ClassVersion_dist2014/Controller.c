@@ -55,7 +55,7 @@ void agents_controller( WORLD_TYPE *w )
 
 	/* Initialize */
 //	forwardspeed = 0.5;
- forwardspeed = rand()%100*0.1;
+ forwardspeed = rand()%10000*0.0001;
  
  	a = w->agents[0] ; /* get agent pointer */
 	
@@ -144,7 +144,7 @@ void agents_controller( WORLD_TYPE *w )
 		date = localtime( &now ) ;
 		strftime(timestamp, 30, "%y/%m/%d H: %H M: %M S: %S",date) ;
 		printf("Death time: %s\n",timestamp) ;
-		sprintf(eye_data_file_name_str, "timevsspeed.csv");
+		sprintf(eye_data_file_name_str, "./dat/timevsspeed.csv");
 		if((fp = fopen(eye_data_file_name_str, "a+")) != 0x0)
 		{
 		
