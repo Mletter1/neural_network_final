@@ -21,6 +21,9 @@ int epoch_num = 0;
 double rmss[10000];
 int object_num = 0;
 float forwardspeed = 0;
+float init_x;
+float init_y;
+float init_head_position = 0;
 
 /*Unexported functions*/
 object *addObject(float *input, int input_num, float output);
@@ -41,7 +44,6 @@ void agents_controller( WORLD_TYPE *w )
 	//float forwardspeed ;
 	float maxvisualreceptordirection ;
 	float bodyx, bodyy, bodyth ;
-	float x, y, h ;
 	float **eyevalues, **ear0values, **ear1values, **skinvalues ;
 	float ear0mag=0.0, ear1mag=0.0 ;
 	time_t now ;
@@ -53,9 +55,6 @@ void agents_controller( WORLD_TYPE *w )
 	char eye_data_file_name_str[50] = "";
 	int idx = 0;
 	FILE *fp = 0x0;
-
-	/* Initialize */
-//	forwardspeed = 0.5;
  
  	a = w->agents[0] ; /* get agent pointer */
 	
@@ -63,7 +62,6 @@ void agents_controller( WORLD_TYPE *w )
 		reset agent & world */
 	if( a->instate->metabolic_charge > 0.0)
 	{
-		printf("moving.....\n");
 		/* get current motor rates and body/head angles */
 		read_actuators_agent(a, &dfb, &drl, &dth, &dh ) ;
 		read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
@@ -78,12 +76,11 @@ void agents_controller( WORLD_TYPE *w )
 		read_visual_sensor( w, a) ;
 		eyevalues = extract_visual_receptor_values_pointer( a, 0 ) ;
 
-
-		for( k=0 ; k<nsomareceptors ; k++ )
-    		{
-      			if( (k==0 || k==1 || k==7 ) && skinvalues[k][0]>0.0 )
-      			{
-        			delta_energy = eat_colliding_object(w, a, k) ;		
+		for(k = 0 ; k < nsomareceptors ; k++)
+        {
+            if((k == 0 || k == 1 || k ==7 ) && skinvalues[k][0] > 0.0)
+            {
+                //delta_energy = eat_colliding_object(w, a, k) ;
 #if 0				
 				if(delta_energy != 0)
 				{
@@ -94,20 +91,8 @@ void agents_controller( WORLD_TYPE *w )
 				}
 #endif
 			}
-    		}
-
-    						/* read hearing sensors and load spectra for each ear, and compute integrated sound magnitudes */
-		read_acoustic_sensor( w, a) ;
-		ear0values = extract_sound_receptor_values_pointer( a, 0 ) ;
-		ear1values = extract_sound_receptor_values_pointer( a, 1 ) ;
-		nacousticfrequencies = get_number_of_acoustic_receptors( a ) ;    
-		for( i=0 ; i<nacousticfrequencies ; i++ )
-		{
-		  ear0mag += ear0values[i][0] ;
-		  ear1mag += ear1values[i][0] ;
-		}
-		//printf("simtime: %d ear0mag: %f ear1mag: %f\n",simtime,ear0mag,ear1mag) ;
-    
+        }
+        
 		/* read visual sensor to get R, G, B intensity values */ 
 		read_visual_sensor( w, a) ;
 		eyevalues = extract_visual_receptor_values_pointer( a, 0 ) ;
@@ -118,7 +103,7 @@ void agents_controller( WORLD_TYPE *w )
 		if( maxvisualreceptor >= 0 ) 
 		{
 			/* use brightest visual receptor to determine how to turn body to center it in the field of view */
-			maxvisualreceptordirection = visual_receptor_position( a->instate->eyes[0], maxvisualreceptor ) ;      
+			maxvisualreceptordirection = visual_receptor_position( a->instate->eyes[0], maxvisualreceptor );      
 			/* rotate body to face brightes object */
 			set_agent_body_angle( a, bodyth + maxvisualreceptordirection ) ;
 		}
@@ -128,6 +113,7 @@ void agents_controller( WORLD_TYPE *w )
 			read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
  			set_agent_body_angle( a, bodyth + 45.0 ) ;
 		}
+        
 		/* move the agents body */
 		set_forward_speed_agent( a, forwardspeed ) ;
 		move_body_agent( a ) ;
@@ -148,7 +134,7 @@ void agents_controller( WORLD_TYPE *w )
 		if((fp = fopen(eye_data_file_name_str, "a+")) != 0x0)
 		{
 		
-			fprintf(fp, "%f,%d\n", forwardspeed, simtime);
+			fprintf(fp, "%f,%f,%d\n", forwardspeed, init_head_position, simtime);
 			fclose(fp);
 		}
 
@@ -156,44 +142,23 @@ void agents_controller( WORLD_TYPE *w )
 		restore_objects_to_world( Flatworld ) ;  /* restore all of the objects back into the world */
 		reset_agent_charge( a ) ;               /* recharge the agent's battery to full */
 		a->instate->itemp[0] = 0 ;              /* zero the number of object's eaten accumulator */
-		x = distributions_uniform( Flatworld->xmin, Flatworld->xmax ) ; /* pick random starting position and heading */
-		y = distributions_uniform( Flatworld->ymin, Flatworld->ymax ) ;
-		h = distributions_uniform( -179.0, 179.0) ;
-		printf("\nagent_controller- new coordinates after restoration:  x: %f y: %f h: %f\n",x,y,h) ;
-		set_agent_body_position( a, x, y, h ) ;    /* set new position and heading of agent */
-    		
+		
+        /* keep starting position the same and change head angle */
+        init_x = (Flatworld->xmax + Flatworld->xmin)/2;
+        init_y = (Flatworld->ymax + Flatworld->ymin)/2;
+		init_head_position = 0;
+		printf("\nagent_controller- new coordinates after restoration:  x: %f y: %f h: %f\n", init_x, init_y, init_head_position) ;
+		set_agent_body_position(a, init_x, init_y, init_head_position) ;
+        
 		/* Accumulate lifetime statistices */
 		avelifetime += (float)simtime ;
 		simtime = 0 ;
 		nlifetimes++ ;
-		forwardspeed += 0.005;
+		forwardspeed += 0.01;
 				
-		if(nlifetimes >= 20)//maxnlifetimes )
+		if(nlifetimes >= 100)//maxnlifetimes )
 		{
-			/*plot data and clean up data*/
-			//Todo: plot data
-			sprintf(eye_data_file_name_str, "%s%d_%d_%d.csv", eye_data_file_name, date->tm_hour, date->tm_min, date->tm_sec);
-			printf("store the data and exit with epoch %d\n", epoch_num);
-			if((fp = fopen(eye_data_file_name_str, "w+")) != 0x0)
-			{
-				/*Log rms*/
-				for(idx = 0; idx < epoch_num; idx++)
-				{
-					fprintf(fp, "%d,%lg\n", idx+1, rmss[idx]);
-				}
-				
-				fprintf(fp, "\nThe final weights are:\n");
-
-				/*Log weights*/
-				for(idx = 0; idx <= neuron_brain.input_num; idx++)
-				{
-					fprintf(fp, "%lg,", neuron_brain.weights[idx]);
-				}
-
-				fclose(fp);
-			}
-			epoch_num = 0;
-
+			
 			avelifetime /= (float)maxnlifetimes ;
 			printf("\nAverage lifetime: %f\n",avelifetime) ;
 			exit(0) ;

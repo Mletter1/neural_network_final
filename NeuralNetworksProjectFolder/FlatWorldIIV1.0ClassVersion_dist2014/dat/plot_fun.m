@@ -1,14 +1,14 @@
-file_name = 'timevsspeed-second';
+file_name = 'timevsspeed';
 fileID = fopen(strcat(file_name, '.csv'));
-C = textscan(fileID, '%f,%f');
+C = textscan(fileID, '%f,%f,%f,,');
 fclose(fileID);
 celldisp(C);
-A = unique(C{1});
-B = reshape(C{2}, [22 20]);
 
-D = mean(B, 2);
-E = std(B, 0, 2);
-errorbar(A, D, 3*E);
+[m, n] = size(C{1});
+
+E = zeros(m, n);
+
+errorbar(C{1}, C{3}, E);
 title(file_name);
 xlabel('speed');
 ylabel('simulation life');

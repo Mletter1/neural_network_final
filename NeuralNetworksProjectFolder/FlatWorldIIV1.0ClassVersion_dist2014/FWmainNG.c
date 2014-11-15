@@ -85,7 +85,7 @@ int main(int argc, char** argv)
   strftime(timestamp, 30, "%y/%m/%d H: %H M: %M S: %S",date) ;
   printf("main- Start time: %s\n",timestamp) ;
 
-  for( t=0 ; t<100000 ; t++ )
+  for( t = 0 ; t < 100000 ; )
   {
     agents_controller( Flatworld ) ;
   }
