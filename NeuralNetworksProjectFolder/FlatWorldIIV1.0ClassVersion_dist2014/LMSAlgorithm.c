@@ -47,7 +47,7 @@ void adjust_function(float* inputs, struct perceptron* p, void *params)
 	}
 }
 
-void init(int input_num)
+void initialize(int input_num)
 {
 	int idx = 0;
 	neuron_brain.input_num = input_num;
@@ -70,7 +70,7 @@ int LMScalculate(float *inputs, int input_num, int isCal, float expected)
 
 	if(!initialized)
 	{
-		init(input_num);
+		initialize(input_num);
 		initialized = 1;
 	}
 

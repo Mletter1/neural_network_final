@@ -1,6 +1,6 @@
 #Makefile for Flatworld II V1.0 tpc 17 March 2009
 CC = gcc
-FILES = FWmainNG.o Perceptron.o LMSAlgorithm.o
+FILES = FWmain.o Perceptron.o LMSAlgorithm.o
 #for Linux
 #IPATH= -I/usr/X11R6/include 
 #LPATH= -L/usr/X11R6/lib
@@ -21,8 +21,8 @@ endif
 FWmain: $(FILES)
 	 $(CC) -g -Wall $(COPTS) $(FILES) $(IPATH) $(LPATH) $(LDLIBS)
 
-FWmain.o: FWmainNG.c 
+FWmain.o: FWmain.c 
 
-	$(CC) -c -Wall $(COPTS) $(IPATH) FWmainNG.c Perceptron.c LMSAlgorithm.o
+	$(CC) -c -Wall $(COPTS) $(IPATH) FWmain.c Perceptron.c LMSAlgorithm.c
 clean:
 	-rm -f *.o a.out
