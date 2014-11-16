@@ -1,4 +1,4 @@
-file_name = 'timevsspeed';
+file_name = 'timevsspeed_arch2data';
 fileID = fopen(strcat(file_name, '.csv'));
 C = textscan(fileID, '%f,%f,%f');
 fclose(fileID);
