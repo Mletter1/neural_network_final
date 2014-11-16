@@ -7,16 +7,14 @@ celldisp(C);
 
 X = unique(C{1});
 [m, n] = size(X);
-X = X(2:m, :);
-b = C{3};
-b = b(2:end, :);
-Y = transpose(reshape(C{3}, [], 20));
+
+Y = transpose(reshape(X, m, []));
 
 M = mean(Y, 2);
 E = std(Y, 1, 2);
 
 
-errorbar(X, M, E);
-title('Architecture 2 Life Time vs Speed');
+errorbar(C{1}, M, E);
+title(file_name);
 xlabel('speed');
 ylabel('simulation life');
