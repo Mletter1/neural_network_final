@@ -20,7 +20,7 @@ static object_list list;
 int epoch_num = 0;
 double rmss[10000];
 int object_num = 0;
-float forwardspeed = 0;
+float forwardspeed = 0.1;
 float init_x;
 float init_y;
 float init_head_position = 0;
@@ -81,7 +81,6 @@ void agents_controller( WORLD_TYPE *w )
             if((k == 0 || k == 1 || k ==7 ) && skinvalues[k][0] > 0.0)
             {
                 delta_energy = eat_colliding_object(w, a, k) ;
-#if 0				
 				if(delta_energy != 0)
 				{
 					printf("Training the neuron with delta value is %f\n", delta_energy);
@@ -89,7 +88,6 @@ void agents_controller( WORLD_TYPE *w )
 					/*Train the neuron*/
 					LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, (delta_energy > 0 ? 1.0 : 0.0));
 				}
-#endif
 			}
         }
         
@@ -144,30 +142,48 @@ void agents_controller( WORLD_TYPE *w )
 		a->instate->itemp[0] = 0 ;              /* zero the number of object's eaten accumulator */
 		
         /* keep starting position the same and change head angle */
-        if(nlifetimes%72 == 0)
-        {
-            forwardspeed += 0.01;
-            init_head_position = 0;
-        }
-        else
-            init_head_position += 5;
+        
+        init_head_position += 5;
         
         init_x = (Flatworld->xmax + Flatworld->xmin)/2;
         init_y = (Flatworld->ymax + Flatworld->ymin)/2;
 		
 		printf("\nagent_controller- new coordinates after restoration:  x: %f y: %f h: %f\n", init_x, init_y, init_head_position) ;
-		set_agent_body_position(a, init_x, init_y, init_head_position) ;
+		set_agent_body_position(a, init_x, init_y, init_head_position/360) ;
         
 		/* Accumulate lifetime statistices */
 		avelifetime += (float)simtime ;
 		simtime = 0 ;
 		nlifetimes++ ;
 				
-		if(nlifetimes >= 1440)//maxnlifetimes )
+		if(nlifetimes >= 1000)//maxnlifetimes )
 		{
-			
+            /*plot data and clean up data*/
+            sprintf(eye_data_file_name_str, "%sdata.csv", eye_data_file_name);
+            printf("store the data and exit with epoch %d\n", epoch_num);
+            
+            if((fp = fopen(eye_data_file_name_str, "w+")) != 0x0)
+            {
+                /*Log rms*/
+                for(idx = 0; idx < epoch_num; idx++)
+                {
+                    fprintf(fp, "%d,%lg\n", idx+1, rmss[idx]);
+                }
+                
+                fprintf(fp, "\nThe final weights are:\n");
+                
+                /*Log weights*/
+                for(idx = 0; idx <= neuron_brain.input_num; idx++)
+                {
+                    fprintf(fp, "%lg,", neuron_brain.weights[idx]);
+                }
+                
+                fclose(fp);
+            }
+            epoch_num = 0;
+            
 			avelifetime /= (float)maxnlifetimes ;
-			printf("\nAverage lifetime: %f\n",avelifetime) ;
+			printf("\nAverage lifetime: %f\n",avelifetime);
 			exit(0) ;
 		}
 		else
