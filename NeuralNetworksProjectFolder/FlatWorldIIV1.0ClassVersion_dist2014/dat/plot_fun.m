@@ -8,7 +8,7 @@ celldisp(C);
 
 E = zeros(m, n);
 
-errorbar(C{1}, C{3}, E);
-title(file_name);
+errorbar(C{1}, C{3}, E);hold on
+title('');
 xlabel('speed');
 ylabel('simulation life');
