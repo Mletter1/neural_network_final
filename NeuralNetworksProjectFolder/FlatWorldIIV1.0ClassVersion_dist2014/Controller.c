@@ -80,7 +80,7 @@ void agents_controller( WORLD_TYPE *w )
         {
             if((k == 0 || k == 1 || k ==7 ) && skinvalues[k][0] > 0.0)
             {
-                //delta_energy = eat_colliding_object(w, a, k) ;
+                delta_energy = eat_colliding_object(w, a, k) ;
 #if 0				
 				if(delta_energy != 0)
 				{
@@ -144,9 +144,17 @@ void agents_controller( WORLD_TYPE *w )
 		a->instate->itemp[0] = 0 ;              /* zero the number of object's eaten accumulator */
 		
         /* keep starting position the same and change head angle */
+        if(nlifetimes%72 == 0)
+        {
+            forwardspeed += 0.01;
+            init_head_position = 0;
+        }
+        else
+            init_head_position += 5;
+        
         init_x = (Flatworld->xmax + Flatworld->xmin)/2;
         init_y = (Flatworld->ymax + Flatworld->ymin)/2;
-		init_head_position = 0;
+		
 		printf("\nagent_controller- new coordinates after restoration:  x: %f y: %f h: %f\n", init_x, init_y, init_head_position) ;
 		set_agent_body_position(a, init_x, init_y, init_head_position) ;
         
@@ -154,9 +162,8 @@ void agents_controller( WORLD_TYPE *w )
 		avelifetime += (float)simtime ;
 		simtime = 0 ;
 		nlifetimes++ ;
-		forwardspeed += 0.01;
 				
-		if(nlifetimes >= 100)//maxnlifetimes )
+		if(nlifetimes >= 1440)//maxnlifetimes )
 		{
 			
 			avelifetime /= (float)maxnlifetimes ;
