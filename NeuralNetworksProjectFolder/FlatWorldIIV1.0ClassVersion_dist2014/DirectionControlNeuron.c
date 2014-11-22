@@ -1,0 +1,59 @@
+//
+//  DirectionControlNeuron.c
+//  FlatWorldIIV1.0ClassVersion_dist2014
+//
+//  Created by lin sun on 11/22/14.
+//  Copyright (c) 2014 lin sun. All rights reserved.
+//
+
+#include "DirectionControlNeuron.h"
+#include <math.h>
+
+int set_direction(WORLD_TYPE *world, AGENT_TYPE *agent, int eye_idx)
+{
+    VISUAL_SENSOR_TYPE **eyes = agent->instate->eyes;
+    int num_receptors;
+    int num_bands;
+    int receptor_idx = 0;
+    int band_idx = 0;
+    int max_receptor = -1 ;
+    float intensity = 0;
+    float maxintensity = 0;
+    float bodyx = 0;
+    float bodyy = 0;
+    float bodyh = 0;
+    
+    num_receptors = eyes[0]->nreceptors ;
+    num_bands = eyes[0]->nbands ;
+    
+    read_visual_sensor(world, agent) ;
+    extract_visual_receptor_values_pointer(agent, 0) ;
+    
+    for(receptor_idx = 0; receptor_idx < num_receptors; receptor_idx++)
+    {
+        intensity = 0 ;
+        
+        for(band_idx = 0; band_idx < num_bands; band_idx++)
+            intensity += pow(eyes[0]->values[receptor_idx][band_idx], 2.0) ;
+        intensity = sqrt(intensity) ;
+        
+        if(intensity > maxintensity)
+        {
+            max_receptor = receptor_idx;
+            maxintensity = intensity ;
+        }
+    }
+    
+    read_agent_body_position(agent, &bodyx, &bodyy, &bodyh) ;
+    
+    if(max_receptor == -1)
+    {
+        set_agent_body_angle(agent, bodyh + 45);
+    }
+    else
+    {
+        set_agent_body_angle(agent, bodyh + eyes[0]->receptor_locations[max_receptor] + eyes[0]->receptor_directions[max_receptor]);
+    }
+    
+    return max_receptor;
+}

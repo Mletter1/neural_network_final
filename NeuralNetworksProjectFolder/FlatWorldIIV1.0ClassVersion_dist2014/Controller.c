@@ -1,4 +1,5 @@
 #include "LMSAlgorithm.h"
+#include "DirectionControlNeuron.h"
 #include "Perceptron.h"
 
 typedef struct object
@@ -54,7 +55,9 @@ void agents_controller( WORLD_TYPE *w )
 	char eye_data_file_name[20] = "./dat/eye_data_";
 	char eye_data_file_name_str[50] = "";
 	int idx = 0;
+    float stopping_criteria = 0.00000001;
 	FILE *fp = 0x0;
+    int ret = 0;
  
  	a = w->agents[0] ; /* get agent pointer */
 	
@@ -81,43 +84,29 @@ void agents_controller( WORLD_TYPE *w )
             if((k == 0 || k == 1 || k ==7 ) && skinvalues[k][0] > 0.0)
             {
                 delta_energy = eat_colliding_object(w, a, k) ;
-				if(delta_energy != 0)
-				{
-					printf("Training the neuron with delta value is %f\n", delta_energy);
-					object_num++;	
-					/*Train the neuron*/
-					LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, (delta_energy > 0 ? 1.0 : 0.0));
-				}
+
+                printf("Training the neuron with delta value is %f\n", delta_energy);
+                object_num++;
+                
+                /*Train the neuron*/
+                LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, (delta_energy > 0 ? 1.0 : 0.0));
 			}
         }
         
-		/* read visual sensor to get R, G, B intensity values */ 
-		read_visual_sensor( w, a) ;
-		eyevalues = extract_visual_receptor_values_pointer( a, 0 ) ;
+        /*Move robot*/
+        ret = set_direction(w, a, 0);
 		 
-		/* find brights object in visual field */
+		/* find brights object in visual field using other method */
 		maxvisualreceptor = intensity_winner_takes_all( a ) ;
 
-		if( maxvisualreceptor >= 0 ) 
-		{
-			/* use brightest visual receptor to determine how to turn body to center it in the field of view */
-			maxvisualreceptordirection = visual_receptor_position( a->instate->eyes[0], maxvisualreceptor );      
-			/* rotate body to face brightes object */
-			set_agent_body_angle( a, bodyth + maxvisualreceptordirection ) ;
-		}
-		else
-		{
-			printf("agents_controller-  No visible object, simtime: %d, changing direction.\n",simtime) ;
-			read_agent_body_position( a, &bodyx, &bodyy, &bodyth ) ;
- 			set_agent_body_angle( a, bodyth + 45.0 ) ;
-		}
+        printf("Compare result %d with %d.... \n", ret, maxvisualreceptor);
         
 		/* move the agents body */
-		set_forward_speed_agent( a, forwardspeed ) ;
-		move_body_agent( a ) ;
+		set_forward_speed_agent(a, forwardspeed) ;
+		move_body_agent(a) ;
 
 		/* decrement metabolic charge by basil metabolism rate.  DO NOT REMOVE THIS CALL */
-		basal_metabolism_agent( a ) ;
+		basal_metabolism_agent(a) ;
 		simtime++ ;
 	} /* end agent alive condition */
 	else
@@ -156,7 +145,7 @@ void agents_controller( WORLD_TYPE *w )
 		simtime = 0 ;
 		nlifetimes++ ;
 				
-		if(nlifetimes >= 1000)//maxnlifetimes )
+		if(nlifetimes >= maxnlifetimes || (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
 		{
             /*plot data and clean up data*/
             sprintf(eye_data_file_name_str, "%sdata.csv", eye_data_file_name);
@@ -188,8 +177,8 @@ void agents_controller( WORLD_TYPE *w )
 		}
 		else
 		{
-			printf("This is the %dth epoch with %f random speed\n", epoch_num, forwardspeed);			
 			rmss[epoch_num] = pow(accumulated_rms/object_num, 0.5);
+            printf("This is the %dth epoch with %f random speed with %f rms\n", epoch_num, forwardspeed, rmss[epoch_num]);
 			epoch_num++;
 			accumulated_rms = 0;
 			object_num = 0;
