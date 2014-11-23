@@ -53,10 +53,17 @@ void initialize(int input_num)
 	neuron_brain.input_num = input_num;
 	perceptron_default(&neuron_brain);
 
-	for(idx = 0; idx <= input_num; idx++)
-	{
-		neuron_brain.weights[idx] = 0.1 * (rand()%10);
-	}
+    /*This part uses the old data*/
+    neuron_brain.weights[0] = -0.0593627;
+    neuron_brain.weights[1] = -0.0574903;
+    neuron_brain.weights[2] = 0.643285;
+    neuron_brain.weights[3] = -0.0570887;
+    
+    /*This part is used to train the neuron*/
+//	for(idx = 0; idx <= input_num; idx++)
+//	{
+//		neuron_brain.weights[idx] = 0.1 * (rand()%10);
+//	}
 }
 
 
@@ -77,7 +84,7 @@ int LMScalculate(float *inputs, int input_num, int isCal, float expected)
 	v_function(inputs, &neuron_brain);
 	y_function(&neuron_brain);
 
-	if(neuron_brain.output > 0.5)
+	if(neuron_brain.output > 0)
 		ret = 1;
 
 	if(isCal)
