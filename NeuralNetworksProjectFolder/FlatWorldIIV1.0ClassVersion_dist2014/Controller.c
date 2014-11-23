@@ -52,6 +52,7 @@ void agents_controller( WORLD_TYPE *w )
 	int is_poisonous = 0;
 	//temporary file
 	char eye_data_file_name[20] = "./dat/eye_data_";
+    char direction_data_file_name[20] = "./dat/direction_data.csv";
 	char eye_data_file_name_str[50] = "";
 	int idx = 0;
     float stopping_criteria = 0.00000001;
@@ -62,7 +63,7 @@ void agents_controller( WORLD_TYPE *w )
 	
 	/* test if agent is alive. if so, process sensors and actuators.  if not, report death and 
 		reset agent & world */
-	if( a->instate->metabolic_charge > 0.0)
+	if(a->instate->metabolic_charge > 0.0)
 	{
 		/* get current motor rates and body/head angles */
 		read_actuators_agent(a, &dfb, &drl, &dth, &dh ) ;
@@ -71,11 +72,11 @@ void agents_controller( WORLD_TYPE *w )
 				
 		/* read somatic(touch) sensor for collision */  
 		collision_flag = read_soma_sensor(w, a) ; 	
-    		skinvalues = extract_soma_receptor_values_pointer( a ) ;
-    		nsomareceptors = get_number_of_soma_receptors( a ) ;
+        skinvalues = extract_soma_receptor_values_pointer( a ) ;
+        nsomareceptors = get_number_of_soma_receptors( a ) ;
     	
 		/* read visual sensor to get R, G, B intensity values to collect x values*/ 
-		read_visual_sensor( w, a) ;
+		read_visual_sensor(w, a) ;
 		eyevalues = extract_visual_receptor_values_pointer( a, 0 ) ;
 
 		for(k = 0 ; k < nsomareceptors ; k++)
@@ -83,12 +84,13 @@ void agents_controller( WORLD_TYPE *w )
             if((k == 0 || k == 1 || k ==7 ) && skinvalues[k][0] > 0.0)
             {
                 delta_energy = eat_colliding_object(w, a, k) ;
-
+#if 0
                 printf("Training the neuron with delta value is %f\n", delta_energy);
                 object_num++;
                 
                 /*Train the neuron*/
                 LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, (delta_energy > 0 ? 1.0 : 0.0));
+#endif
 			}
         }
         
@@ -97,8 +99,12 @@ void agents_controller( WORLD_TYPE *w )
 		 
 		/* find brights object in visual field using other method */
 		maxvisualreceptor = intensity_winner_takes_all( a ) ;
-
-        printf("Compare result %d with %d.... \n", ret, maxvisualreceptor);
+        
+        if((fp = fopen(direction_data_file_name, "a+")) != 0x0)
+        {
+            fprintf(fp, "%d,%d\n", ret, maxvisualreceptor);
+            fclose(fp);
+        }
         
 		/* move the agents body */
 		set_forward_speed_agent(a, forwardspeed) ;
@@ -143,8 +149,8 @@ void agents_controller( WORLD_TYPE *w )
 		avelifetime += (float)simtime ;
 		simtime = 0 ;
 		nlifetimes++ ;
-				
-		if(nlifetimes >= maxnlifetimes || (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
+        //maxnlifetimes
+		if(nlifetimes >=  40|| (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
 		{
             /*plot data and clean up data*/
             sprintf(eye_data_file_name_str, "%sdata.csv", eye_data_file_name);
