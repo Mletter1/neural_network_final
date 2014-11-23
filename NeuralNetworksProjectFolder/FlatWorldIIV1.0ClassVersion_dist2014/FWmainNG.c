@@ -33,6 +33,7 @@ float avelifetime = 0.0 ;
 #include "Distributions_Funcs.c"
 #include "FlatworldIICore.c"
 #include "Controller.c"
+#include "DirectionControlNeuron.c"
 
 AGENT_TYPE *current_agent ;
 

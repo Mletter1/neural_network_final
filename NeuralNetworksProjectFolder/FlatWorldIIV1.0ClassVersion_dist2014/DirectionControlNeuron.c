@@ -6,9 +6,6 @@
 //  Copyright (c) 2014 lin sun. All rights reserved.
 //
 
-#include "DirectionControlNeuron.h"
-#include <math.h>
-
 int set_direction(WORLD_TYPE *world, AGENT_TYPE *agent, int eye_idx)
 {
     VISUAL_SENSOR_TYPE **eyes = agent->instate->eyes;

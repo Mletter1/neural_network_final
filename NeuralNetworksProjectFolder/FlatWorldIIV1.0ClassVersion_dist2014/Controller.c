@@ -1,5 +1,4 @@
 #include "LMSAlgorithm.h"
-#include "DirectionControlNeuron.h"
 #include "Perceptron.h"
 
 typedef struct object
