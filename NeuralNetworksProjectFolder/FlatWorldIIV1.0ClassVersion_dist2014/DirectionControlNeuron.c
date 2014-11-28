@@ -31,25 +31,13 @@ int set_direction(WORLD_TYPE *world, AGENT_TYPE *agent, int eye_idx)
         intensity = 0 ;
         
         for(band_idx = 0; band_idx < num_bands; band_idx++)
-            intensity += pow(eyes[0]->values[receptor_idx][band_idx], 2.0) ;
-        intensity = sqrt(intensity) ;
+            intensity += eyes[0]->values[receptor_idx][band_idx] ;
         
         if(intensity > maxintensity)
         {
             max_receptor = receptor_idx;
             maxintensity = intensity ;
         }
-    }
-    
-    read_agent_body_position(agent, &bodyx, &bodyy, &bodyh) ;
-    
-    if(max_receptor == -1)
-    {
-        set_agent_body_angle(agent, bodyh + 45);
-    }
-    else
-    {
-        set_agent_body_angle(agent, bodyh + eyes[0]->receptor_locations[max_receptor] + eyes[0]->receptor_directions[max_receptor]);
     }
     
     return max_receptor;

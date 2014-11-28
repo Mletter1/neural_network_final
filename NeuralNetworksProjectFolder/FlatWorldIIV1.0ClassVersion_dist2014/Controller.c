@@ -20,7 +20,7 @@ static object_list list;
 int epoch_num = 0;
 double rmss[10000];
 int object_num = 0;
-float forwardspeed = 0.1;
+float forwardspeed = 0.01;
 float init_x;
 float init_y;
 float init_head_position = 0;
@@ -52,12 +52,13 @@ void agents_controller( WORLD_TYPE *w )
 	int is_poisonous = 0;
 	//temporary file
 	char eye_data_file_name[20] = "./dat/eye_data_";
-    char direction_data_file_name[20] = "./dat/direction_data.csv";
+    char direction_data_file_name[20] = "./dat/direction_data";
 	char eye_data_file_name_str[50] = "";
 	int idx = 0;
     float stopping_criteria = 0.00000001;
 	FILE *fp = 0x0;
     int ret = 0;
+    float *input_data = 0x0;
  
  	a = w->agents[0] ; /* get agent pointer */
 	
@@ -81,16 +82,13 @@ void agents_controller( WORLD_TYPE *w )
 
 		for(k = 0 ; k < nsomareceptors ; k++)
         {
+            
             ret = LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 0, 0);
-            printf("Object is %spoisonous\n", (ret == 1 ? "not " : ""));
+            //printf("Object is %spoisonous\n", (ret == 1 ? "not " : ""));
             if((k == 0 || k == 1 || k ==7 ) && skinvalues[k][0] > 0.0 && ret == 1)
             {
                 delta_energy = eat_colliding_object(w, a, k) ;
 #if 0
-                /*This part is used to train the neuron*/
-                printf("Training the neuron with delta value is %f\n", delta_energy);
-                object_num++;
-                
                 /*Train the neuron*/
                 LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, (delta_energy > 0 ? 1.0 : 0.0));
 #endif
@@ -100,8 +98,16 @@ void agents_controller( WORLD_TYPE *w )
         /*Move robot*/
         ret = set_direction(w, a, 0);
 		 
-		/* find brights object in visual field using other method
-		maxvisualreceptor = intensity_winner_takes_all( a ) ;*/
+        read_agent_body_position(a, &bodyx, &bodyy, &bodyth) ;
+        
+        if(ret == -1)
+        {
+            set_agent_body_angle(a, bodyth + 45);
+        }
+        else
+        {
+            set_agent_body_angle(a, bodyth + a->instate->eyes[0]->receptor_locations[ret] + a->instate->eyes[0]->receptor_directions[ret]);
+        }
         
 		/* move the agents body */
 		set_forward_speed_agent(a, forwardspeed) ;
@@ -117,9 +123,7 @@ void agents_controller( WORLD_TYPE *w )
 		printf("agent_controller- Agent has died, eating %d objects. simtime: %d\n",a->instate->itemp[0], simtime ) ;
 		now = time(NULL) ;
 		date = localtime( &now ) ;
-		strftime(timestamp, 30, "%y/%m/%d H: %H M: %M S: %S",date) ;
-		printf("Death time: %s\n",timestamp) ;
-		/*
+		
         sprintf(eye_data_file_name_str, "./dat/timevsspeed.csv");
 		if((fp = fopen(eye_data_file_name_str, "a+")) != 0x0)
 		{
@@ -127,7 +131,7 @@ void agents_controller( WORLD_TYPE *w )
 			fprintf(fp, "%f,%f,%d\n", forwardspeed, init_head_position, simtime);
 			fclose(fp);
 		}
-         */
+
 		/* Example as to how to restore the world and agent after it dies. */
 		restore_objects_to_world( Flatworld ) ;  /* restore all of the objects back into the world */
 		reset_agent_charge( a ) ;               /* recharge the agent's battery to full */
@@ -136,19 +140,25 @@ void agents_controller( WORLD_TYPE *w )
         /* keep starting position the same and change head angle */
         
         init_head_position += 5;
+        nlifetimes++ ;
+        if(nlifetimes%72 == 0)
+        {
+            init_head_position -= 360;
+            forwardspeed += 0.01;
+        }
         
         init_x = (Flatworld->xmax + Flatworld->xmin)/2;
         init_y = (Flatworld->ymax + Flatworld->ymin)/2;
 		
 		printf("\nagent_controller- new coordinates after restoration:  x: %f y: %f h: %f\n", init_x, init_y, init_head_position) ;
-		set_agent_body_position(a, init_x, init_y, init_head_position/360) ;
+		set_agent_body_position(a, init_x, init_y, init_head_position) ;
         
 		/* Accumulate lifetime statistices */
-		avelifetime += (float)simtime ;
 		simtime = 0 ;
-		nlifetimes++ ;
+		
+        
         //maxnlifetimes
-		if(nlifetimes >=  40|| (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
+		if(nlifetimes >=  1440)//|| (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
 		{
             /*plot data and clean up data*/
             
@@ -175,14 +185,12 @@ void agents_controller( WORLD_TYPE *w )
 //            }
             epoch_num = 0;
             
-			avelifetime /= (float)maxnlifetimes ;
-			printf("\nAverage lifetime: %f\n",avelifetime);
 			exit(0) ;
 		}
 		else
 		{
-			rmss[epoch_num] = pow(accumulated_rms/object_num, 0.5);
-            printf("This is the %dth epoch with %f random speed with %f rms\n", epoch_num, forwardspeed, rmss[epoch_num]);
+			//rmss[epoch_num] = pow(accumulated_rms/object_num, 0.5);
+            //printf("This is the %dth epoch with %f random speed with %f rms\n", epoch_num, forwardspeed, rmss[epoch_num]);
 			epoch_num++;
 			accumulated_rms = 0;
 			object_num = 0;

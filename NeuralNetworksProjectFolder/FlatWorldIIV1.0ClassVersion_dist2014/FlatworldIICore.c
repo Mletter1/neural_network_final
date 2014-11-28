@@ -1561,7 +1561,7 @@ float read_agent_mass( AGENT_TYPE *a )
 
 void reset_agent_charge( AGENT_TYPE *a )
 {
-  printf("reset_agent_charge- Resetting agent: %d charge to 1.0\n",a->index) ;
+  //printf("reset_agent_charge- Resetting agent: %d charge to 1.0\n",a->index) ;
   a->instate->metabolic_charge = 1.0 ;
 }
 
@@ -2088,8 +2088,8 @@ float eat_colliding_object( WORLD_TYPE *w, AGENT_TYPE *a, int j )
       agent_eat_object(  w, a, o ) ; /* eat the object */
       a->instate->itemp[0]++ ; /* increment the total number of objects eaten. this uses one of the user definable 
                                 temp variable in the agent data struct. */
-      printf("eat_colliding_object- Object: %3d of type: %1d eaten, food_value: %f. New charge: %5.4f total eaten: %1d simtime: %4d\n",
-             o->index,o->type,o->food_value,a->instate->metabolic_charge,a->instate->itemp[0],simtime) ;
+      //printf("eat_colliding_object- Object: %3d of type: %1d eaten, food_value: %f. New charge: %5.4f total eaten: %1d simtime: %4d\n",
+           //  o->index,o->type,o->food_value,a->instate->metabolic_charge,a->instate->itemp[0],simtime) ;
       return( o->food_value ) ; /* assumes only one object is in collision with skin at one time */
     }	
   }
@@ -2515,14 +2515,14 @@ void restore_objects_to_world( WORLD_TYPE *w)
 
   int i ;
   
-  printf("restore_objects_to_world- before restore,  w->nactive_objects: %d w->nobjects: %d\n", w->nactive_objects, w->nobjects) ;
+  //printf("restore_objects_to_world- before restore,  w->nactive_objects: %d w->nobjects: %d\n", w->nactive_objects, w->nobjects) ;
   for( i=0 ; i<w->nobjects ; i++ ) 
   {
     w->objects[i]->type = abs( w->objects[i]->type ) ;
     w->objects[i]->inworld_flag = 1 ;
   }
   w->nactive_objects = w->nobjects ;
-  printf("restore_objects_to_world- restoration complete.\n") ;
+  //printf("restore_objects_to_world- restoration complete.\n") ;
 }
 
 
