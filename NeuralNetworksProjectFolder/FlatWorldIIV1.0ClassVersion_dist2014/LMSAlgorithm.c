@@ -4,12 +4,12 @@
  *  Created on: Oct 24, 2014
  *      Author: lin
  */
-#include "LMSAlgorithm.h"
-#include "Perceptron.h"
-
 #define OUTPUT_NUM 1
 #define LEARNING_RATE 0.01
 #define NEURON_NUM 1
+
+#include "LMSAlgorithm.h"
+#include "Perceptron.h"
 
 int initialized = 0;
 perceptron neuron_brain;
@@ -70,11 +70,13 @@ void initialize(int input_num)
 /***********************************************************/
 /*  Exportable functions				   */
 /***********************************************************/
-int LMScalculate(float *inputs, int input_num, int isCal, float expected)
+int LMScalculate(float *original_inputs, int input_num, int isCal, float expected)
 {
 	int ret = 0;
 	double e = (double)expected;
-
+    float *inputs = (float*)malloc(input_num * sizeof(float));
+    memcpy(inputs, original_inputs, sizeof(float) * ( input_num));
+    
 	if(!initialized)
 	{
 		initialize(input_num);
