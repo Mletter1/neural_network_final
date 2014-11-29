@@ -54,7 +54,7 @@ void agents_controller( WORLD_TYPE *w )
     char direction_data_file_name[20] = "./dat/direction_data";
 	char eye_data_file_name_str[50] = "";
 	int idx = 0;
-    float stopping_criteria = 0.00000001;
+    float stopping_criteria = 0.000000001;
 	FILE *fp = 0x0;
     int ret = 0;
     float *input_data = 0x0;
@@ -82,9 +82,9 @@ void agents_controller( WORLD_TYPE *w )
 		for(k = 0 ; k < nsomareceptors ; k++)
         {
             
-            ret = LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 0, 0);
+            //ret = LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 0, 0);
             
-            if((k == 0 || k == 1 || k ==7 ) && skinvalues[k][0] > 0.0 && ret == 1)
+            if((k == 0 || k == 1 || k ==7 )) //&& skinvalues[k][0] > 0.0 && ret == 1)
             {
                 delta_energy = eat_colliding_object(w, a, k) ;
                 
@@ -162,7 +162,7 @@ void agents_controller( WORLD_TYPE *w )
 		
         
         //maxnlifetimes
-		if(nlifetimes >=  3000 || (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
+		if(nlifetimes >=  1500 || (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
 		{
             /*plot data and clean up data*/
             
