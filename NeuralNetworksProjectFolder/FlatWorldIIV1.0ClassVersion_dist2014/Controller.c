@@ -144,7 +144,7 @@ void agents_controller( WORLD_TYPE *w )
         init_head_position += 5;
         if(init_head_position >= 360)
             init_head_position -= 360;
-//        nlifetimes++ ;
+        nlifetimes++ ;
 //        if(nlifetimes%72 == 0)
 //        {
 //            init_head_position -= 360;
