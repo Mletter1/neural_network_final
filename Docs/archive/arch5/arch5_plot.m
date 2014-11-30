@@ -19,3 +19,4 @@ errorbar(X, M, E);
 title('Architecture 5 Life Time vs Speed');
 xlabel('speed');
 ylabel('simulation life');
+
