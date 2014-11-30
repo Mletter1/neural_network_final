@@ -16,6 +16,6 @@ E = std(Y, 1, 2);
 
 
 errorbar(X, M, E);
-title('Architecture 5 Life Time vs Speed');
+title('Architecture 7 Life Time vs Speed');
 xlabel('speed');
 ylabel('simulation life');
