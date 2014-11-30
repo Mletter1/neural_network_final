@@ -54,12 +54,12 @@ void initialize(int input_num)
 	perceptron_default(&neuron_brain);
 
     /*This part uses the old data*/
-    neuron_brain.weights[0] = 0.493975;
-    neuron_brain.weights[1] = -0.658991;
-    neuron_brain.weights[2] = 0.720632;
-    neuron_brain.weights[3] = -0.144448;
-    
-    /*This part is used to train the neuron*/
+    neuron_brain.weights[0] = 0.0364013;
+    neuron_brain.weights[1] = -0.462995;
+    neuron_brain.weights[2] = 1.26562;
+    neuron_brain.weights[3] = -0.833772;
+
+//    /*This part is used to train the neuron*/
 //	for(idx = 0; idx <= input_num; idx++)
 //	{
 //		neuron_brain.weights[idx] = 0.1 * (rand()%10);
@@ -74,8 +74,20 @@ int LMScalculate(float *original_inputs, int input_num, int isCal, float expecte
 {
 	int ret = 0;
 	double e = (double)expected;
+    int it = 0;
+    float sum = 0;
     float *inputs = (float*)malloc(input_num * sizeof(float));
     memcpy(inputs, original_inputs, sizeof(float) * ( input_num));
+    
+    for(it = 0; it < input_num; it++)
+    {
+        sum += inputs[it];
+    }
+    
+    for(it = 0; it < input_num; it++)
+    {
+        inputs[it] /= sum;
+    }
     
 	if(!initialized)
 	{
@@ -103,6 +115,8 @@ int LMScalculate(float *original_inputs, int input_num, int isCal, float expecte
 
 	return ret;
 }
+
+
 
 void reset()
 {

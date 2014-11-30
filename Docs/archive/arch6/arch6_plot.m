@@ -1,4 +1,4 @@
-file_name = 'arch6_eye_data_data';
+file_name = 'eye_data_data';
 fileID = fopen(strcat(file_name, '.csv'));
 C = textscan(fileID, '%f,%f');
 fclose(fileID);

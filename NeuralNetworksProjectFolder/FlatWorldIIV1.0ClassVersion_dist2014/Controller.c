@@ -54,7 +54,7 @@ void agents_controller( WORLD_TYPE *w )
     char direction_data_file_name[20] = "./dat/direction_data";
 	char eye_data_file_name_str[50] = "";
 	int idx = 0;
-    float stopping_criteria = 0.000000001;
+    float stopping_criteria = 0.00000001;
 	FILE *fp = 0x0;
     int ret = 0;
     float *input_data = 0x0;
@@ -88,12 +88,12 @@ void agents_controller( WORLD_TYPE *w )
             {
                 delta_energy = eat_colliding_object(w, a, k) ;
                 
-                /*Train the neuron*/
-                if(delta_energy != 0)
-                {
-                    object_num++;
-                    LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, (delta_energy > 0 ? 1.0 : 0.0));
-                }
+//                /*Train the neuron*/
+//                if(delta_energy != 0)
+//                {
+//                    object_num++;
+//                    LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 1, (delta_energy > 0 ? 1.0 : 0.0));
+//                }
 			}
         }
         
@@ -153,7 +153,7 @@ void agents_controller( WORLD_TYPE *w )
         init_x = (Flatworld->xmax + Flatworld->xmin)/2;
         init_y = (Flatworld->ymax + Flatworld->ymin)/2;
 		
-		printf("\nagent_controller- new coordinates after restoration:  x: %f y: %f h: %f\n", init_x, init_y, init_head_position) ;
+		printf("\nagent_controller- new coordinates after restoration:  x: %f y: %f h: %f f: %f\n", init_x, init_y, init_head_position, forwardspeed) ;
 		set_agent_body_position(a, init_x, init_y, init_head_position) ;
         
 		/* Accumulate lifetime statistices */
@@ -161,10 +161,10 @@ void agents_controller( WORLD_TYPE *w )
 		
         
         //maxnlifetimes
-		if(nlifetimes >=  1440)// || (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
+		if(nlifetimes >=  1440) //|| (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
 		{
             /*plot data and clean up data*/
-//            
+            
 //            sprintf(eye_data_file_name_str, "%sdata.csv", eye_data_file_name);
 //            printf("store the data and exit with epoch %d\n", epoch_num);
 //            
