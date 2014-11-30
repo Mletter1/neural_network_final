@@ -54,10 +54,10 @@ void initialize(int input_num)
 	perceptron_default(&neuron_brain);
 
     /*This part uses the old data*/
-    neuron_brain.weights[0] = -0.0593627;
-    neuron_brain.weights[1] = -0.0574903;
-    neuron_brain.weights[2] = 0.643285;
-    neuron_brain.weights[3] = -0.0570887;
+    neuron_brain.weights[0] = 0.493975;
+    neuron_brain.weights[1] = -0.658991;
+    neuron_brain.weights[2] = 0.720632;
+    neuron_brain.weights[3] = -0.144448;
     
     /*This part is used to train the neuron*/
 //	for(idx = 0; idx <= input_num; idx++)

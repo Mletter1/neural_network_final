@@ -19,7 +19,7 @@ static object_list list;
 int epoch_num = 0;
 double rmss[10000];
 int object_num = 0;
-float forwardspeed = 0.1;
+float forwardspeed = 0.01;
 float init_x;
 float init_y;
 float init_head_position = 0;
@@ -82,9 +82,9 @@ void agents_controller( WORLD_TYPE *w )
 		for(k = 0 ; k < nsomareceptors ; k++)
         {
             
-            //ret = LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 0, 0);
+            ret = LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 0, 0);
             
-            if((k == 0 || k == 1 || k ==7 ) && skinvalues[k][0] > 0.0) //&& ret == 1)
+            if((k == 0 || k == 1 || k ==7 ) && skinvalues[k][0] > 0.0 && ret == 1)
             {
                 delta_energy = eat_colliding_object(w, a, k) ;
                 
@@ -142,14 +142,13 @@ void agents_controller( WORLD_TYPE *w )
         /* keep starting position the same and change head angle */
         
         init_head_position += 5;
-        if(init_head_position >= 360)
-            init_head_position -= 360;
+
         nlifetimes++ ;
-//        if(nlifetimes%72 == 0)
-//        {
-//            init_head_position -= 360;
-//            forwardspeed += 0.01;
-//        }
+        if(nlifetimes%72 == 0)
+        {
+            init_head_position -= 360;
+            forwardspeed += 0.01;
+        }
         
         init_x = (Flatworld->xmax + Flatworld->xmin)/2;
         init_y = (Flatworld->ymax + Flatworld->ymin)/2;
@@ -162,42 +161,42 @@ void agents_controller( WORLD_TYPE *w )
 		
         
         //maxnlifetimes
-		if(nlifetimes >=  3000 || (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
+		if(nlifetimes >=  1440)// || (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
 		{
             /*plot data and clean up data*/
-            
-            sprintf(eye_data_file_name_str, "%sdata.csv", eye_data_file_name);
-            printf("store the data and exit with epoch %d\n", epoch_num);
-            
-            if((fp = fopen(eye_data_file_name_str, "w+")) != 0x0)
-            {
-                /*Log rms*/
-                for(idx = 0; idx < epoch_num; idx++)
-                {
-                    fprintf(fp, "%d,%lg\n", idx+1, rmss[idx]);
-                }
-                
-                fprintf(fp, "\nThe final weights are:\n");
-                
-                /*Log weights*/
-                for(idx = 0; idx <= neuron_brain.input_num; idx++)
-                {
-                    fprintf(fp, "%lg,", neuron_brain.weights[idx]);
-                }
-                
-                fclose(fp);
-            }
-            epoch_num = 0;
+//            
+//            sprintf(eye_data_file_name_str, "%sdata.csv", eye_data_file_name);
+//            printf("store the data and exit with epoch %d\n", epoch_num);
+//            
+//            if((fp = fopen(eye_data_file_name_str, "w+")) != 0x0)
+//            {
+//                /*Log rms*/
+//                for(idx = 0; idx < epoch_num; idx++)
+//                {
+//                    fprintf(fp, "%d,%lg\n", idx+1, rmss[idx]);
+//                }
+//                
+//                fprintf(fp, "\nThe final weights are:\n");
+//                
+//                /*Log weights*/
+//                for(idx = 0; idx <= neuron_brain.input_num; idx++)
+//                {
+//                    fprintf(fp, "%lg,", neuron_brain.weights[idx]);
+//                }
+//                
+//                fclose(fp);
+//            }
+//            epoch_num = 0;
             
 			exit(0) ;
 		}
 		else
 		{
-			rmss[epoch_num] = pow(accumulated_rms/object_num, 0.5);
-            printf("This is the %dth epoch with %f random speed with %f rms\n", epoch_num, forwardspeed, rmss[epoch_num]);
-			epoch_num++;
-			accumulated_rms = 0;
-			object_num = 0;
+//			rmss[epoch_num] = pow(accumulated_rms/object_num, 0.5);
+//            printf("This is the %dth epoch with %f random speed with %f rms\n", epoch_num, forwardspeed, rmss[epoch_num]);
+//			epoch_num++;
+//			accumulated_rms = 0;
+//			object_num = 0;
 		}
 	} /* end agent dead condition */
 }/*end agents_controller()*/

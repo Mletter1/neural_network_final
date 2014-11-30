@@ -33,8 +33,8 @@ int set_direction(WORLD_TYPE *world, AGENT_TYPE *agent, int eye_idx)
         
         for(band_idx = 0; band_idx < num_bands; band_idx++)
             intensity += eyes[0]->values[receptor_idx][band_idx] ;
-        //ret = LMScalculate(eyes[0]->values[receptor_idx], a->instate->eyes[0]->nbands, 0, 0);
-        if(intensity > maxintensity)// && ret == 1)
+        ret = LMScalculate(eyes[0]->values[receptor_idx], agent->instate->eyes[0]->nbands, 0, 0);
+        if(intensity > maxintensity && ret == 1)
         {
             max_receptor = receptor_idx;
             maxintensity = intensity ;
