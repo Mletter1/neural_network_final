@@ -84,7 +84,7 @@ void agents_controller( WORLD_TYPE *w )
             
             ret = LMScalculate(eyevalues[a->instate->eyes[0]->nreceptors/2], a->instate->eyes[0]->nbands, 0, 0);
             
-            if((k == 0 || k == 1 || k ==7 ) && skinvalues[k][0] > 0.0 && ret == 1)
+            if((k == 0) && skinvalues[k][0] > 0.0 && ret == 1)
             {
                 delta_energy = eat_colliding_object(w, a, k) ;
                 
@@ -141,10 +141,10 @@ void agents_controller( WORLD_TYPE *w )
 		
         /* keep starting position the same and change head angle */
         
-        init_head_position += 5;
+        init_head_position += 20;
 
         nlifetimes++ ;
-        if(nlifetimes%72 == 0)
+        if(nlifetimes%18 == 0)
         {
             init_head_position -= 360;
             forwardspeed += 0.01;
@@ -161,7 +161,7 @@ void agents_controller( WORLD_TYPE *w )
 		
         
         //maxnlifetimes
-		if(nlifetimes >=  1440) //|| (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
+		if(nlifetimes >=  360) //|| (epoch_num > 10 && fabs(rmss[epoch_num - 1] - rmss[epoch_num - 2]) < stopping_criteria))   /*Add stopping condition for the neuron training to stop*/
 		{
             /*plot data and clean up data*/
             
